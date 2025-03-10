@@ -7,7 +7,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 
-public class Exercise32Panel extends JPanel {
+public class DNSLookupPanel extends JPanel {
     private JTextField domainField;
     private JComboBox<String> recordTypeComboBox;
     private JButton lookupButton;
@@ -18,12 +18,12 @@ public class Exercise32Panel extends JPanel {
         "A", "AAAA", "MX", "NS", "CNAME", "TXT", "SOA", "PTR", "SRV", "All"
     };
     
-    public Exercise32Panel() {
+    public DNSLookupPanel() {
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         
         // Create title panel
-        JLabel titleLabel = new JLabel("<html><h2>Exercise 3.2: NSLookup Tool</h2></html>");
+        JLabel titleLabel = new JLabel("<html><h2>DNS Records Lookup Tool</h2></html>");
         add(titleLabel, BorderLayout.NORTH);
         
         // Create the main content panel

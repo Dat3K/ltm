@@ -5,12 +5,12 @@ import java.awt.*;
 import java.awt.event.*;
 import java.net.*;
 
-public class Exercise31Panel extends JPanel {
+public class HostnameToIPPanel extends JPanel {
     private JTextField hostnameField;
     private JTextArea resultArea;
     private JButton lookupButton;
 
-    public Exercise31Panel() {
+    public HostnameToIPPanel() {
         setLayout(new BorderLayout());
         
         // Create content panel with simple BorderLayout
