@@ -3,6 +3,18 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+// Add imports for lab classes in their new locations
+import lab1.Lab1;
+import lab2.Lab2;
+import lab3.Lab3;
+import lab4.Lab4;
+import lab5.Lab5;
+import lab6.Lab6;
+import lab7.Lab7;
+import lab8.Lab8;
+import lab9.Lab9;
+import lab10.Lab10;
+
 public class MainFrame extends JFrame {
     public MainFrame() {
         setTitle("52100781_NguyenThanhDat - Exercise Launcher");

@@ -1,3 +1,4 @@
+package lab3;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -112,11 +113,6 @@ public class Lab3 extends JFrame {
         }
     }
     
-    /**
-     * Determines the class of an IPv4 address
-     * @param ipAddress the IP address as a string
-     * @return the IP address class (A, B, C, D, E, or "Unknown" for special cases)
-     */
     private String getIpAddressClass(String ipAddress) {
         // For IPv6 addresses, return special classification
         if (ipAddress.contains(":")) {
