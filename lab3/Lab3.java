@@ -1,13 +1,8 @@
 package lab3;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
-import java.net.*;
 
 public class Lab3 extends JFrame {
-    private JTextField hostnameField;
-    private JTextArea resultArea;
-    private JButton lookupButton;
     
     public Lab3() {
         setTitle("52100781_NguyenThanhDat - Lab 3");
@@ -15,145 +10,24 @@ public class Lab3 extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         
-        JPanel mainPanel = new JPanel(new BorderLayout());
+        // Create a tabbed pane to organize exercises
+        JTabbedPane tabbedPane = new JTabbedPane();
         
-        // Create content panel with simple BorderLayout
-        JPanel contentPanel = new JPanel(new BorderLayout(10, 10));
-        contentPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        // Add Exercise 3.1 tab (Hostname to IP Address)
+        Exercise31Panel exercise31Panel = new Exercise31Panel();
+        tabbedPane.addTab("Exercise 3.1: Hostname to IP", null, exercise31Panel, "Convert hostname to IP address");
         
-        // Input panel with hostname field and lookup button
-        JPanel inputPanel = new JPanel(new BorderLayout(10, 0));
-        inputPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
+        // Add Exercise 3.2 tab
+        Exercise32Panel exercise32Panel = new Exercise32Panel();
+        tabbedPane.addTab("Exercise 3.2: IP Information", null, exercise32Panel, "Display detailed IP information");
         
-        JLabel hostnameLabel = new JLabel("Enter Hostname: ");
-        hostnameField = new JTextField(20);
-        lookupButton = new JButton("Lookup IP Address");
+        // Add the tabbed pane to the frame
+        add(tabbedPane, BorderLayout.CENTER);
         
-        inputPanel.add(hostnameLabel, BorderLayout.WEST);
-        inputPanel.add(hostnameField, BorderLayout.CENTER);
-        inputPanel.add(lookupButton, BorderLayout.EAST);
-        
-        // Quick test buttons panel
-        JPanel quickTestPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
-        quickTestPanel.setBorder(BorderFactory.createTitledBorder("Quick Test"));
-        
-        String[] commonHostnames = {"google.com", "facebook.com", "github.com", "localhost", "amazon.com"};
-        
-        for (final String hostname : commonHostnames) {
-            JButton testButton = new JButton(hostname);
-            testButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    hostnameField.setText(hostname);
-                    lookupHostname();
-                }
-            });
-            quickTestPanel.add(testButton);
-        }
-        
-        // Create a wrapper panel to hold both input panel and quick test panel
-        JPanel topPanel = new JPanel(new BorderLayout());
-        topPanel.add(inputPanel, BorderLayout.NORTH);
-        topPanel.add(quickTestPanel, BorderLayout.CENTER);
-        
-        // Result area
-        resultArea = new JTextArea();
-        resultArea.setEditable(false);
-        resultArea.setFont(new Font("Monospaced", Font.PLAIN, 14));
-        JScrollPane scrollPane = new JScrollPane(resultArea);
-        
-        // Add panels to content panel
-        contentPanel.add(topPanel, BorderLayout.NORTH);
-        contentPanel.add(scrollPane, BorderLayout.CENTER);
-        
-        // Add event listener to button
-        lookupButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                lookupHostname();
-            }
-        });
-        
-        // Add event listener for Enter key in hostname field
-        hostnameField.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    lookupHostname();
-                }
-            }
-        });
-        
-        mainPanel.add(contentPanel, BorderLayout.CENTER);
-        add(mainPanel);
-    }
-    
-    private void lookupHostname() {
-        String hostname = hostnameField.getText().trim();
-        if (hostname.isEmpty()) {
-            resultArea.setText("Please enter a hostname");
-            return;
-        }
-        
-        try {
-            InetAddress[] addresses = InetAddress.getAllByName(hostname);
-            resultArea.setText("");
-            resultArea.append("Results for hostname: " + hostname + "\n\n");
-            
-            for (int i = 0; i < addresses.length; i++) {
-                String ipAddress = addresses[i].getHostAddress();
-                String ipClass = getIpAddressClass(ipAddress);
-                resultArea.append((i + 1) + ". " + ipAddress + " - Class " + ipClass + "\n");
-            }
-        } catch (UnknownHostException ex) {
-            resultArea.setText("Could not find IP address for hostname: " + hostname + "\n");
-            resultArea.append("Error: " + ex.getMessage());
-        } catch (Exception ex) {
-            resultArea.setText("An error occurred: " + ex.getMessage());
-        }
-    }
-    
-    private String getIpAddressClass(String ipAddress) {
-        // For IPv6 addresses, return special classification
-        if (ipAddress.contains(":")) {
-            return "IPv6";
-        }
-        
-        try {
-            // Parse the first octet of the IP address
-            String[] octets = ipAddress.split("\\.");
-            int firstOctet = Integer.parseInt(octets[0]);
-            
-            // Classify based on first octet
-            if (firstOctet >= 1 && firstOctet <= 126) {
-                if (firstOctet == 10) {
-                    return "A (Private)";
-                }
-                return "A";
-            } else if (firstOctet == 127) {
-                return "Loopback";
-            } else if (firstOctet >= 128 && firstOctet <= 191) {
-                if (firstOctet == 172 && (Integer.parseInt(octets[1]) >= 16 && Integer.parseInt(octets[1]) <= 31)) {
-                    return "B (Private)";
-                }
-                return "B";
-            } else if (firstOctet >= 192 && firstOctet <= 223) {
-                if (firstOctet == 192 && Integer.parseInt(octets[1]) == 168) {
-                    return "C (Private)";
-                }
-                return "C";
-            } else if (firstOctet >= 224 && firstOctet <= 239) {
-                return "D (Multicast)";
-            } else if (firstOctet >= 240 && firstOctet <= 255) {
-                return "E (Reserved)";
-            } else if (firstOctet == 169 && Integer.parseInt(octets[1]) == 254) {
-                return "Link-Local";
-            }
-        } catch (Exception e) {
-            // Handle any parsing errors
-            return "Unknown format";
-        }
-        
-        return "Unknown";
+        // Add a title at the top
+        JLabel titleLabel = new JLabel("52100781_NguyenThanhDat - Lab 3 Exercises", SwingConstants.CENTER);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+        add(titleLabel, BorderLayout.NORTH);
     }
 }
