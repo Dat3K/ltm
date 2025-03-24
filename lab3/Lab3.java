@@ -6,7 +6,7 @@ public class Lab3 extends JFrame {
     
     public Lab3() {
         setTitle("52100781_NguyenThanhDat - Lab 3");
-        setSize(800, 600);
+        setSize(1000, 700);  // Increased size for better display of the log analyzer
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         
@@ -21,9 +21,9 @@ public class Lab3 extends JFrame {
         DNSLookupPanel dnsLookupPanel = new DNSLookupPanel();
         tabbedPane.addTab("DNS Records Lookup", null, dnsLookupPanel, "Query DNS records for domains");
         
-        // Add Exercise 3.3 tab with renamed class
-        LogAnalyzerPanel logAnalyzerPanel = new LogAnalyzerPanel();
-        tabbedPane.addTab("Web Server Log Analyzer", null, logAnalyzerPanel, "Analyze web server log files");
+        // Add Exercise 3.3 tab - Simple Web Log Analyzer
+        WebLogAnalyzer webLogAnalyzer = new WebLogAnalyzer();
+        tabbedPane.addTab("Web Server Log Analyzer", null, webLogAnalyzer, "Process and analyze web server logs");
         
         // Add the tabbed pane to the frame
         add(tabbedPane, BorderLayout.CENTER);

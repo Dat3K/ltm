@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="ExerciseLauncher" default="jar" basedir=".">
+    <description>
+        Build file for creating a runnable JAR for Exercise Launcher
+    </description>
+    
+    <!-- Set global properties for this build -->
+    <property name="src" location="."/>
+    <property name="build" location="build"/>
+    <property name="dist" location="dist"/>
+    
+    <target name="init">
+        <!-- Create the build and dist directory structure -->
+        <mkdir dir="${build}"/>
+        <mkdir dir="${dist}"/>
+    </target>
+    
+    <target name="compile" depends="init" description="compile the source">
+        <!-- Compile the Java code from ${src} into ${build} -->
+        <javac srcdir="${src}" destdir="${build}" includeantruntime="false">
+            <include name="**/*.java"/>
+        </javac>
+        <!-- Copy any non-java files that might be in the lab packages -->
+        <copy todir="${build}">
+            <fileset dir="${src}">
+                <exclude name="**/*.java"/>
+                <exclude name="build.xml"/>
+                <exclude name="*.jar"/>
+            </fileset>
+        </copy>
+    </target>
+    
+    <target name="jar" depends="compile" description="generate the jar file">
+        <!-- Create the distribution jar file -->
+        <jar jarfile="${dist}/ExerciseLauncher.jar" basedir="${build}" manifest="MANIFEST.MF"/>
+    </target>
+    
+    <target name="clean" description="clean up">
+        <!-- Delete the ${build} and ${dist} directory trees -->
+        <delete dir="${build}"/>
+        <delete dir="${dist}"/>
+    </target>
+</project>
