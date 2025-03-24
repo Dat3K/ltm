@@ -1,10 +1,10 @@
-package lab3;
+package lab34;
 import javax.swing.*;
 import java.awt.*;
 
-public class Lab3 extends JFrame {
+public class Lab34 extends JFrame {
     
-    public Lab3() {
+    public Lab34() {
         setTitle("52100781_NguyenThanhDat - Lab 3");
         setSize(1000, 700);  // Increased size for better display of the log analyzer
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

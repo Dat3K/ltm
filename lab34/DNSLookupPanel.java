@@ -1,4 +1,4 @@
-package lab3;
+package lab34;
 
 import javax.swing.*;
 import javax.naming.directory.*;
