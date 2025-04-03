@@ -1,4 +1,0 @@
-Manifest-Version: 1.0
-Main-Class: com.chatapp.Main
-Class-Path: postgresql-42.7.5.jar
-
