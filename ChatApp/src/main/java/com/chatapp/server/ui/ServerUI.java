@@ -33,29 +33,10 @@ import javax.swing.border.MatteBorder;
 import javax.swing.text.DefaultCaret;
 
 import com.chatapp.server.ChatServer;
+import com.chatapp.ui.AppColors;
 
 public class ServerUI extends JFrame {
     private static final long serialVersionUID = 1L;
-    
-    // Palette mới
-    private static final Color PRIMARY_COLOR = new Color(22, 196, 127);  // Xanh lục bảo
-    private static final Color SECONDARY_COLOR = new Color(255, 214, 90); // Vàng
-    private static final Color WARNING_COLOR = new Color(255, 157, 35);  // Cam
-    private static final Color DANGER_COLOR = new Color(249, 56, 39);    // Đỏ
-    
-    // Màu sắc phụ
-    private static final Color PRIMARY_DARK = new Color(18, 156, 101);  // Xanh lục bảo tối
-    private static final Color BACKGROUND_COLOR = new Color(245, 245, 250);  // Màu nền xám nhạt
-    private static final Color PANEL_COLOR = new Color(255, 255, 255);  // Màu panel trắng
-    
-    // Màu sắc chức năng
-    private static final Color START_BUTTON_COLOR = PRIMARY_COLOR;  // Màu nút Start
-    private static final Color STOP_BUTTON_COLOR = DANGER_COLOR;    // Màu nút Stop
-    private static final Color LOG_TEXT_COLOR = new Color(240, 240, 240);  // Màu chữ log
-    private static final Color LOG_BACKGROUND_COLOR = new Color(40, 40, 40);  // Màu nền log
-    private static final Color SERVER_RUNNING_COLOR = PRIMARY_COLOR;  // Màu server đang chạy
-    private static final Color SERVER_STOPPED_COLOR = DANGER_COLOR;  // Màu server đã dừng
-    private static final Color SERVER_WARNING_COLOR = WARNING_COLOR;  // Màu cảnh báo
     
     private JTextArea logArea;
     private JButton startButton;
@@ -89,7 +70,7 @@ public class ServerUI extends JFrame {
     
     private void initComponents() {
         // Main layout with modern design
-        getContentPane().setBackground(BACKGROUND_COLOR);
+        getContentPane().setBackground(AppColors.BACKGROUND_COLOR);
         setLayout(new BorderLayout(0, 0));
         
         // Header panel with gradient
@@ -98,7 +79,7 @@ public class ServerUI extends JFrame {
             protected void paintComponent(Graphics g) {
                 Graphics2D g2d = (Graphics2D) g.create();
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                GradientPaint gp = new GradientPaint(0, 0, PRIMARY_COLOR, getWidth(), getHeight(), PRIMARY_DARK);
+                GradientPaint gp = new GradientPaint(0, 0, AppColors.PRIMARY_COLOR, getWidth(), getHeight(), AppColors.SECONDARY_COLOR);
                 g2d.setPaint(gp);
                 g2d.fillRect(0, 0, getWidth(), getHeight());
                 g2d.dispose();
@@ -113,34 +94,34 @@ public class ServerUI extends JFrame {
         // App title
         JLabel titleLabel = new JLabel("Chat Server");
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        titleLabel.setForeground(Color.WHITE);
+        titleLabel.setForeground(AppColors.TEXT_LIGHT);
         headerPanel.add(titleLabel, BorderLayout.WEST);
         
         // Status label in header
         statusLabel = new JLabel("Server is stopped");
         statusLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        statusLabel.setForeground(SERVER_STOPPED_COLOR);
+        statusLabel.setForeground(AppColors.ERROR_COLOR);
         headerPanel.add(statusLabel, BorderLayout.EAST);
         
         add(headerPanel, BorderLayout.NORTH);
         
         // Main content panel
         JPanel contentPanel = new JPanel(new BorderLayout(0, 15));
-        contentPanel.setBackground(BACKGROUND_COLOR);
+        contentPanel.setBackground(AppColors.BACKGROUND_COLOR);
         contentPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
         
         // Control panel
         JPanel controlPanel = new JPanel();
-        controlPanel.setBackground(PANEL_COLOR);
+        controlPanel.setBackground(AppColors.PANEL_COLOR);
         controlPanel.setBorder(BorderFactory.createCompoundBorder(
-                new MatteBorder(1, 1, 1, 1, new Color(220, 220, 220)),
+                new MatteBorder(1, 1, 1, 1, AppColors.BORDER_COLOR),
                 new EmptyBorder(15, 15, 15, 15)));
         controlPanel.setLayout(new BoxLayout(controlPanel, BoxLayout.X_AXIS));
         
-        startButton = createButton("Start Server", START_BUTTON_COLOR, PRIMARY_DARK);
+        startButton = createButton("Start Server", AppColors.SUCCESS_COLOR, AppColors.SECONDARY_BORDER);
         startButton.addActionListener(e -> startServer());
         
-        stopButton = createButton("Stop Server", STOP_BUTTON_COLOR, new Color(200, 45, 30));
+        stopButton = createButton("Stop Server", AppColors.ERROR_COLOR, AppColors.ATTENTION_BORDER);
         stopButton.setEnabled(false);
         stopButton.addActionListener(e -> stopServer());
         
@@ -153,21 +134,22 @@ public class ServerUI extends JFrame {
         
         // Log panel
         JPanel logPanel = new JPanel(new BorderLayout());
-        logPanel.setBackground(PANEL_COLOR);
+        logPanel.setBackground(AppColors.PANEL_COLOR);
         logPanel.setBorder(BorderFactory.createCompoundBorder(
-                new MatteBorder(1, 1, 1, 1, new Color(220, 220, 220)),
+                new MatteBorder(1, 1, 1, 1, AppColors.BORDER_COLOR),
                 new EmptyBorder(0, 0, 0, 0)));
         
         JLabel logLabel = new JLabel("Server Log");
         logLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        logLabel.setForeground(AppColors.PRIMARY_COLOR);
         logLabel.setBorder(new EmptyBorder(10, 15, 10, 15));
         logPanel.add(logLabel, BorderLayout.NORTH);
         
         logArea = new JTextArea();
         logArea.setEditable(false);
         logArea.setFont(new Font("Consolas", Font.PLAIN, 13));
-        logArea.setBackground(LOG_BACKGROUND_COLOR);
-        logArea.setForeground(LOG_TEXT_COLOR);
+        logArea.setBackground(new Color(0x26, 0x32, 0x38));
+        logArea.setForeground(new Color(0xf0, 0xf0, 0xf0));
         logArea.setMargin(new Insets(10, 10, 10, 10));
         
         // Auto-scroll log area
@@ -176,16 +158,18 @@ public class ServerUI extends JFrame {
         
         JScrollPane scrollPane = new JScrollPane(logArea);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
-        logPanel.add(scrollPane, BorderLayout.CENTER);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
         
+        logPanel.add(scrollPane, BorderLayout.CENTER);
         contentPanel.add(logPanel, BorderLayout.CENTER);
+        
         add(contentPanel, BorderLayout.CENTER);
     }
     
     private JButton createButton(String text, Color bgColor, Color borderColor) {
         JButton button = new JButton(text);
         button.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        button.setForeground(Color.WHITE);
+        button.setForeground(AppColors.TEXT_DARK);
         button.setBackground(bgColor);
         button.setFocusPainted(false);
         button.setBorder(BorderFactory.createCompoundBorder(
@@ -226,63 +210,48 @@ public class ServerUI extends JFrame {
         }
         
         serverRunning = true;
-        statusLabel.setText("Server is running");
-        statusLabel.setForeground(SERVER_RUNNING_COLOR);
-        
         startButton.setEnabled(false);
         stopButton.setEnabled(true);
+        statusLabel.setText("Server is running");
+        statusLabel.setForeground(AppColors.SUCCESS_COLOR);
         
+        // Clear log
+        logArea.setText("");
+        
+        // Start server in a separate thread
         serverThread = new Thread(() -> {
-            try {
-                server = new ChatServer();
-                System.out.println("Server started");
-                server.start();
-            } catch (Exception e) {
-                e.printStackTrace();
-                SwingUtilities.invokeLater(() -> {
-                    serverRunning = false;
-                    statusLabel.setText("Server failed to start");
-                    statusLabel.setForeground(SERVER_STOPPED_COLOR);
-                    
-                    startButton.setEnabled(true);
-                    stopButton.setEnabled(false);
-                });
-            }
+            server = new ChatServer();
+            server.start();
         });
-        
         serverThread.start();
     }
     
     private void stopServer() {
-        if (!serverRunning || server == null) {
+        if (!serverRunning) {
             return;
         }
         
-        statusLabel.setText("Server is stopping...");
-        statusLabel.setForeground(SERVER_WARNING_COLOR);
+        System.out.println("Stopping server...");
         
-        Thread stopThread = new Thread(() -> {
+        if (server != null) {
+            server.stop();
+        }
+        
+        if (serverThread != null) {
             try {
-                server.stop();
-                System.out.println("Server stopped");
-                
-                SwingUtilities.invokeLater(() -> {
-                    serverRunning = false;
-                    statusLabel.setText("Server is stopped");
-                    statusLabel.setForeground(SERVER_STOPPED_COLOR);
-                    
-                    startButton.setEnabled(true);
-                    stopButton.setEnabled(false);
-                });
-            } catch (Exception e) {
+                serverThread.join(1000);
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        });
+        }
         
-        stopThread.start();
+        serverRunning = false;
+        startButton.setEnabled(true);
+        stopButton.setEnabled(false);
+        statusLabel.setText("Server is stopped");
+        statusLabel.setForeground(AppColors.ERROR_COLOR);
     }
     
-    // Redirect System.out and System.err to the log area
     private void redirectSystemStreams() {
         OutputStream out = new OutputStream() {
             @Override
@@ -301,22 +270,13 @@ public class ServerUI extends JFrame {
     }
     
     private void appendToLog(final String text) {
-        SwingUtilities.invokeLater(() -> {
-            logArea.append(text);
-        });
+        SwingUtilities.invokeLater(() -> logArea.append(text));
     }
     
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            try {
-                // Set system look and feel
-                //UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            
-            ServerUI serverUI = new ServerUI();
-            serverUI.setVisible(true);
+            ServerUI ui = new ServerUI();
+            ui.setVisible(true);
         });
     }
 } 

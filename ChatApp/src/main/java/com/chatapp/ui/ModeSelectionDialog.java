@@ -32,17 +32,6 @@ import javax.swing.border.EmptyBorder;
 public class ModeSelectionDialog extends JDialog {
     private static final long serialVersionUID = 1L;
     
-    // Palette mới
-    private static final Color PRIMARY_COLOR = new Color(22, 196, 127);  // Xanh lục bảo
-    private static final Color SECONDARY_COLOR = new Color(255, 214, 90); // Vàng
-    private static final Color WARNING_COLOR = new Color(255, 157, 35);  // Cam
-    private static final Color DANGER_COLOR = new Color(249, 56, 39);    // Đỏ
-    
-    // Màu sắc phụ
-    private static final Color PRIMARY_DARK = new Color(18, 156, 101);  // Xanh lục bảo tối
-    private static final Color BACKGROUND_COLOR = new Color(245, 245, 250);  // Màu nền xám nhạt
-    private static final Color TEXT_COLOR = new Color(60, 60, 60);  // Màu chữ xám đậm
-    
     private int selectedMode = -1; // -1: none, 0: client, 1: server
     
     public ModeSelectionDialog() {
@@ -56,7 +45,7 @@ public class ModeSelectionDialog extends JDialog {
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         
         JPanel mainPanel = new JPanel(new BorderLayout());
-        mainPanel.setBackground(BACKGROUND_COLOR);
+        mainPanel.setBackground(AppColors.BACKGROUND_COLOR);
         mainPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
         
         // Header panel with gradient background
@@ -65,7 +54,7 @@ public class ModeSelectionDialog extends JDialog {
             protected void paintComponent(Graphics g) {
                 Graphics2D g2d = (Graphics2D) g.create();
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                GradientPaint gp = new GradientPaint(0, 0, PRIMARY_COLOR, getWidth(), getHeight(), PRIMARY_DARK);
+                GradientPaint gp = new GradientPaint(0, 0, AppColors.PRIMARY_COLOR, getWidth(), getHeight(), AppColors.SECONDARY_COLOR);
                 g2d.setPaint(gp);
                 g2d.fillRect(0, 0, getWidth(), getHeight());
                 g2d.dispose();
@@ -78,7 +67,7 @@ public class ModeSelectionDialog extends JDialog {
         
         JLabel titleLabel = new JLabel("Chat Application", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 28));
-        titleLabel.setForeground(Color.WHITE);
+        titleLabel.setForeground(AppColors.TEXT_LIGHT);
         headerPanel.add(titleLabel, BorderLayout.CENTER);
         
         JLabel subtitleLabel = new JLabel("Select Operation Mode", SwingConstants.CENTER);
@@ -90,7 +79,7 @@ public class ModeSelectionDialog extends JDialog {
         
         // Options panel
         JPanel optionsPanel = new JPanel();
-        optionsPanel.setBackground(BACKGROUND_COLOR);
+        optionsPanel.setBackground(AppColors.BACKGROUND_COLOR);
         optionsPanel.setLayout(new BoxLayout(optionsPanel, BoxLayout.Y_AXIS));
         optionsPanel.setBorder(new EmptyBorder(30, 30, 30, 30));
         
@@ -116,30 +105,19 @@ public class ModeSelectionDialog extends JDialog {
         
         // Footer panel
         JPanel footerPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        footerPanel.setBackground(BACKGROUND_COLOR);
+        footerPanel.setBackground(AppColors.BACKGROUND_COLOR);
         
         JButton exitButton = new JButton("Exit");
         exitButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        exitButton.setForeground(Color.WHITE);
-        exitButton.setBackground(DANGER_COLOR);
+        exitButton.setForeground(AppColors.ATTENTION_COLOR);
+        exitButton.setBackground(AppColors.ATTENTION_COLOR);
         exitButton.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(200, 45, 30), 1),
+                BorderFactory.createLineBorder(AppColors.ATTENTION_BORDER, 1),
                 BorderFactory.createEmptyBorder(8, 20, 8, 20)));
         exitButton.setFocusPainted(false);
         exitButton.addActionListener(e -> {
             selectedMode = -1;
             dispose();
-        });
-        
-        // Hover effect for exit button
-        exitButton.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                exitButton.setBackground(new Color(220, 50, 35));
-            }
-            
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                exitButton.setBackground(DANGER_COLOR);
-            }
         });
         
         footerPanel.add(exitButton);
@@ -153,33 +131,33 @@ public class ModeSelectionDialog extends JDialog {
     private JButton createModeButton(String title, String description) {
         JButton button = new JButton();
         button.setLayout(new BorderLayout());
-        button.setBackground(Color.WHITE);
+        button.setBackground(AppColors.PANEL_COLOR);
         button.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(200, 200, 200), 1),
+                BorderFactory.createLineBorder(AppColors.BORDER_COLOR, 1),
                 BorderFactory.createEmptyBorder(15, 15, 15, 15)));
         button.setFocusPainted(false);
         
         JLabel titleLabel = new JLabel(title);
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        titleLabel.setForeground(PRIMARY_COLOR);
+        titleLabel.setForeground(AppColors.PRIMARY_COLOR);
         
         JLabel descLabel = new JLabel("<html><body width='300px'>" + description + "</body></html>");
         descLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        descLabel.setForeground(TEXT_COLOR);
+        descLabel.setForeground(AppColors.TEXT_DARK);
         
         button.add(titleLabel, BorderLayout.NORTH);
         button.add(descLabel, BorderLayout.CENTER);
         
-        // Hover effect
+        // Hover effect with new accent color
         button.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                button.setBackground(new Color(245, 245, 255));
-                titleLabel.setForeground(PRIMARY_DARK);
+                button.setBackground(AppColors.ACCENT_HOVER);
+                titleLabel.setForeground(AppColors.SECONDARY_COLOR);
             }
             
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                button.setBackground(Color.WHITE);
-                titleLabel.setForeground(PRIMARY_COLOR);
+                button.setBackground(AppColors.PANEL_COLOR);
+                titleLabel.setForeground(AppColors.PRIMARY_COLOR);
             }
         });
         

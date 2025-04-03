@@ -39,31 +39,10 @@ import com.chatapp.client.ChatClient;
 import com.chatapp.client.ChatClient.ChatClientListener;
 import com.chatapp.model.ChatMessage;
 import com.chatapp.model.User;
+import com.chatapp.ui.AppColors;
 
 public class ChatWindow extends JFrame implements ChatClientListener {
     private static final long serialVersionUID = 1L;
-    
-    // Palette mới
-    private static final Color PRIMARY_COLOR = new Color(22, 196, 127);  // Xanh lục bảo
-    private static final Color SECONDARY_COLOR = new Color(255, 214, 90); // Vàng
-    private static final Color WARNING_COLOR = new Color(255, 157, 35);  // Cam
-    private static final Color DANGER_COLOR = new Color(249, 56, 39);    // Đỏ
-    
-    // Màu sắc phụ
-    private static final Color PRIMARY_DARK = new Color(18, 156, 101);   // Xanh lục bảo tối
-    private static final Color BACKGROUND_COLOR = new Color(245, 245, 250);  // Màu nền xám nhạt
-    private static final Color PANEL_COLOR = new Color(255, 255, 255);   // Màu panel trắng
-    
-    // Message colors with better contrast
-    private static final Color MY_MESSAGE_COLOR = new Color(0, 120, 80);  // Màu tin nhắn của tôi
-    private static final Color OTHER_MESSAGE_COLOR = new Color(70, 70, 70);  // Màu tin nhắn người khác
-    private static final Color SYSTEM_MESSAGE_COLOR = DANGER_COLOR;  // Màu thông báo hệ thống
-    private static final Color HISTORY_MESSAGE_COLOR = new Color(100, 100, 100);  // Màu lịch sử
-    
-    // Status colors with better contrast
-    private static final Color CONNECTED_COLOR = PRIMARY_COLOR;  // Màu kết nối
-    private static final Color DISCONNECTED_COLOR = DANGER_COLOR;  // Màu ngắt kết nối
-    private static final Color CONNECTING_COLOR = WARNING_COLOR;  // Màu đang kết nối
     
     private JTextPane chatArea;
     private JTextField messageField;
@@ -95,7 +74,7 @@ public class ChatWindow extends JFrame implements ChatClientListener {
     
     private void initComponents() {
         // Main layout with modern design
-        getContentPane().setBackground(BACKGROUND_COLOR);
+        getContentPane().setBackground(AppColors.BACKGROUND_COLOR);
         setLayout(new BorderLayout(0, 0));
         
         // Top panel (header)
@@ -104,7 +83,7 @@ public class ChatWindow extends JFrame implements ChatClientListener {
             protected void paintComponent(Graphics g) {
                 Graphics2D g2d = (Graphics2D) g.create();
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                GradientPaint gp = new GradientPaint(0, 0, PRIMARY_COLOR, getWidth(), getHeight(), PRIMARY_DARK);
+                GradientPaint gp = new GradientPaint(0, 0, AppColors.PRIMARY_COLOR, getWidth(), getHeight(), AppColors.SECONDARY_COLOR);
                 g2d.setPaint(gp);
                 g2d.fillRect(0, 0, getWidth(), getHeight());
                 g2d.dispose();
@@ -119,7 +98,7 @@ public class ChatWindow extends JFrame implements ChatClientListener {
         // App title
         JLabel titleLabel = new JLabel("Chat Application");
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        titleLabel.setForeground(Color.WHITE);
+        titleLabel.setForeground(AppColors.TEXT_LIGHT);
         headerPanel.add(titleLabel, BorderLayout.WEST);
         
         // Status panel in header
@@ -128,12 +107,12 @@ public class ChatWindow extends JFrame implements ChatClientListener {
         
         statusLabel = new JLabel("Not connected");
         statusLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        statusLabel.setForeground(DISCONNECTED_COLOR);
+        statusLabel.setForeground(new Color(0xff, 0xcc, 0xcc));
         statusPanel.add(statusLabel, BorderLayout.WEST);
         
         userInfoLabel = new JLabel();
         userInfoLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        userInfoLabel.setForeground(Color.WHITE);
+        userInfoLabel.setForeground(AppColors.TEXT_LIGHT);
         statusPanel.add(userInfoLabel, BorderLayout.EAST);
         
         headerPanel.add(statusPanel, BorderLayout.EAST);
@@ -141,20 +120,20 @@ public class ChatWindow extends JFrame implements ChatClientListener {
         
         // Main content panel
         JPanel contentPanel = new JPanel(new BorderLayout(0, 0));
-        contentPanel.setBackground(BACKGROUND_COLOR);
+        contentPanel.setBackground(AppColors.BACKGROUND_COLOR);
         contentPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
         
         // Chat area
         JPanel chatPanel = new JPanel(new BorderLayout());
-        chatPanel.setBackground(PANEL_COLOR);
+        chatPanel.setBackground(AppColors.PANEL_COLOR);
         chatPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(220, 220, 220), 1),
+                BorderFactory.createLineBorder(AppColors.BORDER_COLOR, 1),
                 BorderFactory.createEmptyBorder(0, 0, 0, 0)));
         
         chatArea = new JTextPane();
         chatArea.setEditable(false);
         chatArea.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        chatArea.setBackground(PANEL_COLOR);
+        chatArea.setBackground(AppColors.PANEL_COLOR);
         chatArea.setBorder(new EmptyBorder(10, 10, 10, 10));
         chatArea.setMargin(new Insets(10, 10, 10, 10));
         
@@ -171,35 +150,35 @@ public class ChatWindow extends JFrame implements ChatClientListener {
         
         // Bottom panel (input area)
         JPanel bottomPanel = new JPanel(new BorderLayout(10, 0));
-        bottomPanel.setBackground(PANEL_COLOR);
+        bottomPanel.setBackground(AppColors.PANEL_COLOR);
         bottomPanel.setBorder(BorderFactory.createCompoundBorder(
-                new MatteBorder(1, 1, 1, 1, new Color(220, 220, 220)),
+                new MatteBorder(1, 1, 1, 1, AppColors.BORDER_COLOR),
                 new EmptyBorder(10, 10, 10, 10)));
         
         messageField = new JTextField();
         messageField.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         messageField.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(200, 200, 200)),
+                BorderFactory.createLineBorder(AppColors.BORDER_COLOR),
                 BorderFactory.createEmptyBorder(8, 10, 8, 10)));
         bottomPanel.add(messageField, BorderLayout.CENTER);
         
         sendButton = new JButton("Send");
         sendButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        sendButton.setBackground(PRIMARY_COLOR);
-        sendButton.setForeground(Color.WHITE);
+        sendButton.setBackground(AppColors.SECONDARY_COLOR);
+        sendButton.setForeground(AppColors.PRIMARY_COLOR);
         sendButton.setFocusPainted(false);
         sendButton.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(PRIMARY_DARK, 1),
+                BorderFactory.createLineBorder(AppColors.SECONDARY_BORDER, 1),
                 BorderFactory.createEmptyBorder(8, 20, 8, 20)));
         
         // Add hover effect
         sendButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                sendButton.setBackground(PRIMARY_DARK);
+                sendButton.setBackground(AppColors.SECONDARY_HOVER);
             }
             
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                sendButton.setBackground(PRIMARY_COLOR);
+                sendButton.setBackground(AppColors.SECONDARY_COLOR);
             }
         });
         
@@ -247,7 +226,6 @@ public class ChatWindow extends JFrame implements ChatClientListener {
             String serverHost = loginDialog.getServerHost();
             
             statusLabel.setText("Connecting to " + serverHost + "...");
-            statusLabel.setForeground(CONNECTING_COLOR);
             
             // Connect in background thread to avoid UI freezing
             Thread connectionThread = new Thread(() -> {
@@ -260,103 +238,93 @@ public class ChatWindow extends JFrame implements ChatClientListener {
                     if (!loggedIn) {
                         SwingUtilities.invokeLater(() -> {
                             statusLabel.setText("Login failed");
-                            statusLabel.setForeground(DISCONNECTED_COLOR);
+                            statusLabel.setForeground(AppColors.ERROR_COLOR);
                             showErrorMessage("Failed to log in to the server");
                         });
                     }
                 } else {
                     SwingUtilities.invokeLater(() -> {
                         statusLabel.setText("Connection failed");
-                        statusLabel.setForeground(DISCONNECTED_COLOR);
-                        showErrorMessage("Failed to connect to the server");
+                        statusLabel.setForeground(AppColors.ERROR_COLOR);
+                        showErrorMessage("Failed to connect to the server at " + serverHost);
                     });
                 }
             });
-            
             connectionThread.start();
-        } else {
-            System.exit(0); // Exit if login canceled
         }
     }
     
     private void showErrorMessage(String message) {
-        JOptionPane.showMessageDialog(this, 
-                message, 
-                "Error", 
+        JOptionPane.showMessageDialog(
+                this,
+                message,
+                "Error",
                 JOptionPane.ERROR_MESSAGE);
     }
     
     private void appendToChatArea(String message, Color color) {
-        SwingUtilities.invokeLater(() -> {
+        try {
             Document doc = chatArea.getDocument();
             SimpleAttributeSet attrs = new SimpleAttributeSet();
             StyleConstants.setForeground(attrs, color);
-            StyleConstants.setFontFamily(attrs, "Segoe UI");
             
-            try {
-                doc.insertString(doc.getLength(), message + "\n", attrs);
-            } catch (BadLocationException e) {
-                e.printStackTrace();
-            }
-        });
+            doc.insertString(doc.getLength(), message + "\n", attrs);
+        } catch (BadLocationException e) {
+            e.printStackTrace();
+        }
     }
     
     @Override
     public void onLoginSuccess(User user) {
         SwingUtilities.invokeLater(() -> {
             statusLabel.setText("Connected");
-            statusLabel.setForeground(CONNECTED_COLOR);
+            statusLabel.setForeground(AppColors.SUCCESS_COLOR);
             userInfoLabel.setText("Logged in as: " + user.getUsername());
-            setTitle("Chat Application - " + user.getUsername());
+            appendToChatArea("Connected to server as " + user.getUsername(), AppColors.SECONDARY_COLOR);
         });
     }
     
     @Override
     public void onHistoryReceived(List<ChatMessage> history) {
         SwingUtilities.invokeLater(() -> {
-            if (!history.isEmpty()) {
-                appendToChatArea("--- Chat History ---", HISTORY_MESSAGE_COLOR);
-                
-                // Display messages in chronological order (most recent last)
-                for (int i = history.size() - 1; i >= 0; i--) {
-                    ChatMessage message = history.get(i);
-                    appendToChatArea(message.toString(), HISTORY_MESSAGE_COLOR);
+            if (history.isEmpty()) {
+                appendToChatArea("No chat history", AppColors.TEXT_MUTED);
+            } else {
+                appendToChatArea("--- Chat History ---", AppColors.TEXT_MUTED);
+                for (ChatMessage message : history) {
+                    String formattedMessage = String.format("[%s] %s: %s", 
+                            message.getFormattedTimestamp(), message.getUser().getUsername(), message.getContent());
+                    appendToChatArea(formattedMessage, AppColors.PRIMARY_COLOR);
                 }
-                
-                appendToChatArea("--- End of History ---", HISTORY_MESSAGE_COLOR);
+                appendToChatArea("--- End of History ---", AppColors.TEXT_MUTED);
             }
         });
     }
     
     @Override
     public void onMessageReceived(ChatMessage message) {
-        Color messageColor = OTHER_MESSAGE_COLOR;
-        
-        // Show own messages in a different color
-        if (client.getUser() != null && 
-                message.getUser().getId() == client.getUser().getId()) {
-            messageColor = MY_MESSAGE_COLOR;
-        }
-        
-        appendToChatArea(message.toString(), messageColor);
+        SwingUtilities.invokeLater(() -> {
+            String formattedMessage = String.format("[%s] %s: %s", 
+                    message.getFormattedTimestamp(), message.getUser().getUsername(), message.getContent());
+            appendToChatArea(formattedMessage, AppColors.HIGHLIGHT_COLOR);
+        });
     }
     
     @Override
     public void onConnectionLost() {
         SwingUtilities.invokeLater(() -> {
             statusLabel.setText("Disconnected");
-            statusLabel.setForeground(DISCONNECTED_COLOR);
-            appendToChatArea("--- Connection to server lost ---", SYSTEM_MESSAGE_COLOR);
+            statusLabel.setForeground(AppColors.ERROR_COLOR);
+            appendToChatArea("Connection to server lost", AppColors.ERROR_COLOR);
             
-            // Offer reconnection
-            int choice = JOptionPane.showConfirmDialog(
+            int option = JOptionPane.showConfirmDialog(
                     this,
-                    "Connection to server lost. Would you like to reconnect?",
+                    "Connection to the server was lost. Do you want to reconnect?",
                     "Connection Lost",
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.QUESTION_MESSAGE);
             
-            if (choice == JOptionPane.YES_OPTION) {
+            if (option == JOptionPane.YES_OPTION) {
                 connect();
             }
         });
@@ -364,16 +332,9 @@ public class ChatWindow extends JFrame implements ChatClientListener {
     
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            try {
-                // Set system look and feel
-                //UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            
-            ChatWindow chatWindow = new ChatWindow();
-            chatWindow.setVisible(true);
-            chatWindow.connect();
+            ChatWindow window = new ChatWindow();
+            window.setVisible(true);
+            window.connect();
         });
     }
 } 

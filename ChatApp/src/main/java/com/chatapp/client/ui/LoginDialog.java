@@ -26,19 +26,10 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
+import com.chatapp.ui.AppColors;
+
 public class LoginDialog extends JDialog {
     private static final long serialVersionUID = 1L;
-    
-    // Palette mới
-    private static final Color PRIMARY_COLOR = new Color(22, 196, 127);  // Xanh lục bảo
-    private static final Color SECONDARY_COLOR = new Color(255, 214, 90); // Vàng
-    private static final Color WARNING_COLOR = new Color(255, 157, 35);  // Cam
-    private static final Color DANGER_COLOR = new Color(249, 56, 39);    // Đỏ
-    
-    // Màu sắc phụ
-    private static final Color PRIMARY_DARK = new Color(18, 156, 101);  // Xanh lục bảo tối
-    private static final Color BACKGROUND_COLOR = new Color(245, 245, 250);  // Màu nền xám nhạt
-    private static final Color TEXT_COLOR = new Color(60, 60, 60);  // Màu chữ xám đậm
     
     private JTextField txtUsername;
     private JTextField txtServerHost;
@@ -63,7 +54,7 @@ public class LoginDialog extends JDialog {
         
         // Main panel
         JPanel mainPanel = new JPanel(new BorderLayout(0, 0));
-        mainPanel.setBackground(BACKGROUND_COLOR);
+        mainPanel.setBackground(AppColors.BACKGROUND_COLOR);
         
         // Header Panel with gradient
         JPanel headerPanel = new JPanel() {
@@ -71,7 +62,7 @@ public class LoginDialog extends JDialog {
             protected void paintComponent(Graphics g) {
                 Graphics2D g2d = (Graphics2D) g.create();
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                GradientPaint gp = new GradientPaint(0, 0, PRIMARY_COLOR, getWidth(), getHeight(), PRIMARY_DARK);
+                GradientPaint gp = new GradientPaint(0, 0, AppColors.PRIMARY_COLOR, getWidth(), getHeight(), AppColors.SECONDARY_COLOR);
                 g2d.setPaint(gp);
                 g2d.fillRect(0, 0, getWidth(), getHeight());
                 g2d.dispose();
@@ -85,18 +76,18 @@ public class LoginDialog extends JDialog {
         
         JLabel lblHeader = new JLabel("Chat Login", SwingConstants.CENTER);
         lblHeader.setFont(new Font("Segoe UI", Font.BOLD, 24));
-        lblHeader.setForeground(Color.WHITE);
+        lblHeader.setForeground(AppColors.TEXT_LIGHT);
         headerPanel.add(lblHeader, BorderLayout.CENTER);
         
         mainPanel.add(headerPanel, BorderLayout.NORTH);
         
         // Form panel
         JPanel formPanel = new JPanel(new BorderLayout());
-        formPanel.setBackground(BACKGROUND_COLOR);
+        formPanel.setBackground(AppColors.BACKGROUND_COLOR);
         formPanel.setBorder(new EmptyBorder(25, 30, 20, 30));
         
         JPanel inputPanel = new JPanel(new GridBagLayout());
-        inputPanel.setBackground(BACKGROUND_COLOR);
+        inputPanel.setBackground(AppColors.BACKGROUND_COLOR);
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(8, 5, 8, 5);
@@ -107,7 +98,7 @@ public class LoginDialog extends JDialog {
         gbc.anchor = GridBagConstraints.WEST;
         JLabel lblServerHost = new JLabel("Server Host:");
         lblServerHost.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        lblServerHost.setForeground(TEXT_COLOR);
+        lblServerHost.setForeground(AppColors.PRIMARY_COLOR);
         inputPanel.add(lblServerHost, gbc);
         
         gbc.gridx = 0;
@@ -117,7 +108,7 @@ public class LoginDialog extends JDialog {
         txtServerHost.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         txtServerHost.setMargin(new Insets(8, 8, 8, 8));
         txtServerHost.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(200, 200, 200)),
+                BorderFactory.createLineBorder(AppColors.BORDER_COLOR),
                 BorderFactory.createEmptyBorder(5, 8, 5, 8)));
         inputPanel.add(txtServerHost, gbc);
         
@@ -128,7 +119,7 @@ public class LoginDialog extends JDialog {
         gbc.insets = new Insets(20, 5, 8, 5);
         JLabel lblUsername = new JLabel("Username:");
         lblUsername.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        lblUsername.setForeground(TEXT_COLOR);
+        lblUsername.setForeground(AppColors.PRIMARY_COLOR);
         inputPanel.add(lblUsername, gbc);
         
         gbc.gridx = 0;
@@ -139,7 +130,7 @@ public class LoginDialog extends JDialog {
         txtUsername.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         txtUsername.setMargin(new Insets(8, 8, 8, 8));
         txtUsername.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(200, 200, 200)),
+                BorderFactory.createLineBorder(AppColors.BORDER_COLOR),
                 BorderFactory.createEmptyBorder(5, 8, 5, 8)));
         inputPanel.add(txtUsername, gbc);
         
@@ -147,15 +138,15 @@ public class LoginDialog extends JDialog {
         
         // Buttons panel
         JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
-        buttonsPanel.setBackground(BACKGROUND_COLOR);
+        buttonsPanel.setBackground(AppColors.BACKGROUND_COLOR);
         buttonsPanel.setBorder(new EmptyBorder(20, 0, 0, 0));
         
         btnCancel = new JButton("Cancel");
         btnCancel.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        btnCancel.setForeground(new Color(100, 100, 100));
-        btnCancel.setBackground(Color.WHITE);
+        btnCancel.setForeground(AppColors.TEXT_DARK);
+        btnCancel.setBackground(AppColors.PANEL_COLOR);
         btnCancel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(200, 200, 200), 1),
+                BorderFactory.createLineBorder(AppColors.BORDER_COLOR, 1),
                 BorderFactory.createEmptyBorder(8, 20, 8, 20)));
         btnCancel.setFocusPainted(false);
         btnCancel.addActionListener(new ActionListener() {
@@ -168,10 +159,10 @@ public class LoginDialog extends JDialog {
         
         btnLogin = new JButton("Login");
         btnLogin.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        btnLogin.setForeground(Color.WHITE);
-        btnLogin.setBackground(PRIMARY_COLOR);
+        btnLogin.setForeground(AppColors.SECONDARY_COLOR);
+        btnLogin.setBackground(AppColors.SECONDARY_COLOR);
         btnLogin.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(PRIMARY_DARK, 1),
+                BorderFactory.createLineBorder(AppColors.SECONDARY_BORDER, 1),
                 BorderFactory.createEmptyBorder(8, 25, 8, 25)));
         btnLogin.setFocusPainted(false);
         btnLogin.addActionListener(new ActionListener() {
@@ -184,21 +175,23 @@ public class LoginDialog extends JDialog {
         // Add hover effects
         btnLogin.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                btnLogin.setBackground(PRIMARY_DARK);
+                btnLogin.setBackground(AppColors.SECONDARY_HOVER);
             }
             
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                btnLogin.setBackground(PRIMARY_COLOR);
+                btnLogin.setBackground(AppColors.SECONDARY_COLOR);
             }
         });
         
         btnCancel.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                btnCancel.setBackground(new Color(245, 245, 245));
+                btnCancel.setBackground(AppColors.ACCENT_HOVER);
+                btnCancel.setForeground(AppColors.ATTENTION_COLOR);
             }
             
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                btnCancel.setBackground(Color.WHITE);
+                btnCancel.setBackground(AppColors.PANEL_COLOR);
+                btnCancel.setForeground(AppColors.TEXT_DARK);
             }
         });
         

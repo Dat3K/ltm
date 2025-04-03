@@ -35,25 +35,12 @@ public class Main {
     }
     
     private static void showModeSelectionDialog() {
-        ModeSelectionDialog dialog = new ModeSelectionDialog();
-        
-        // Add a listener to handle dialog closing separately
-        dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-            @Override
-            public void windowClosed(java.awt.event.WindowEvent windowEvent) {
-                // Process the result after the dialog is closed
-                int selectedMode = dialog.getSelectedMode();
-                processModeSelection(selectedMode);
-            }
-        });
-        
         SwingUtilities.invokeLater(() -> {
+            ModeSelectionDialog dialog = new ModeSelectionDialog();
             dialog.setVisible(true);
-        });
-    }
-    
-    private static void processModeSelection(int selectedMode) {
-        SwingUtilities.invokeLater(() -> {
+            
+            // Process the result after the dialog is closed
+            int selectedMode = dialog.getSelectedMode();
             switch (selectedMode) {
                 case 0:
                     startClient();
