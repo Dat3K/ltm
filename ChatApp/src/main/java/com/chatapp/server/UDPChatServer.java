@@ -10,7 +10,6 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -66,12 +65,8 @@ public class UDPChatServer implements ChatServer {
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
                 socket.receive(packet);
                 
-                // Create a new buffer with only the data received
-                byte[] data = new byte[packet.getLength()];
-                System.arraycopy(packet.getData(), packet.getOffset(), data, 0, packet.getLength());
-                
                 // Process packet in a separate thread
-                executor.execute(() -> processPacket(data, packet.getAddress(), packet.getPort()));
+                executor.execute(() -> processPacket(packet));
             } catch (IOException e) {
                 if (running) {
                     System.err.println("Error receiving UDP packet: " + e.getMessage());
@@ -80,31 +75,45 @@ public class UDPChatServer implements ChatServer {
         }
     }
     
-    private void processPacket(byte[] data, InetAddress clientAddress, int clientPort) {
-        try (ByteArrayInputStream bis = new ByteArrayInputStream(data);
+    private void processPacket(DatagramPacket packet) {
+        try (ByteArrayInputStream bis = new ByteArrayInputStream(packet.getData(), 0, packet.getLength());
              ObjectInputStream ois = new ObjectInputStream(bis)) {
             
             Object obj = ois.readObject();
+            InetAddress clientAddress = packet.getAddress();
+            int clientPort = packet.getPort();
             
             if (obj instanceof User) {
-                // Client registration
+                // User registration/connection
                 User user = (User) obj;
                 user.setIpAddress(clientAddress.getHostAddress());
                 
                 String clientKey = clientAddress.getHostAddress() + ":" + clientPort;
+                
+                // Add to connected clients or update if exists
                 ClientInfo clientInfo = new ClientInfo(user, clientAddress, clientPort);
                 clients.put(clientKey, clientInfo);
                 
+                // Notify about new connection
                 onClientConnected.accept(user);
                 
-                // Send recent messages to the client
-                List<Message> recentMessages = messageDAO.getRecentMessages(20);
+                // Gửi danh sách người dùng cập nhật cho tất cả client
+                broadcastUserList();
+                
+                // Send recent messages
+                List<Message> recentMessages = messageDAO.getRecentMessages(50);
                 for (Message message : recentMessages) {
                     sendToClient(message, clientAddress, clientPort);
                 }
                 
-                // Welcome message
-                Message welcomeMessage = new Message("Welcome to the chat server!", "Server", "localhost", "Server");
+                // Welcome message với danh sách người dùng
+                Message welcomeMessage = new Message(
+                    "Welcome to the chat server!", 
+                    "Server", 
+                    "localhost", 
+                    "Server",
+                    getConnectedUsers()
+                );
                 sendToClient(welcomeMessage, clientAddress, clientPort);
                 
             } else if (obj instanceof Message) {
@@ -138,6 +147,7 @@ public class UDPChatServer implements ChatServer {
                 
                 long currentTime = System.currentTimeMillis();
                 List<String> disconnectedClients = new ArrayList<>();
+                List<User> disconnectedUsers = new ArrayList<>();
                 
                 // Check for clients that haven't sent heartbeats recently
                 for (Map.Entry<String, ClientInfo> entry : clients.entrySet()) {
@@ -146,13 +156,22 @@ public class UDPChatServer implements ChatServer {
                     // If no activity for 1 minute, consider disconnected
                     if (currentTime - clientInfo.getLastSeen() > 60000) {
                         disconnectedClients.add(entry.getKey());
-                        onClientDisconnected.accept(clientInfo.getUser());
+                        disconnectedUsers.add(clientInfo.getUser());
                     }
                 }
                 
                 // Remove disconnected clients
-                for (String key : disconnectedClients) {
+                boolean hasDisconnections = false;
+                for (int i = 0; i < disconnectedClients.size(); i++) {
+                    String key = disconnectedClients.get(i);
                     clients.remove(key);
+                    onClientDisconnected.accept(disconnectedUsers.get(i));
+                    hasDisconnections = true;
+                }
+                
+                // Nếu có người dùng nào ngắt kết nối, gửi danh sách người dùng cập nhật
+                if (hasDisconnections) {
+                    broadcastUserList();
                 }
                 
             } catch (InterruptedException e) {
@@ -187,6 +206,26 @@ public class UDPChatServer implements ChatServer {
         // Send to all connected clients
         for (ClientInfo clientInfo : clients.values()) {
             sendToClient(message, clientInfo.getAddress(), clientInfo.getPort());
+        }
+    }
+    
+    // Phương thức mới để gửi danh sách người dùng cập nhật cho tất cả client
+    @Override
+    public void broadcastUserList() {
+        if (!running) return;
+        
+        // Tạo tin nhắn từ server chứa danh sách người dùng
+        Message userListMessage = new Message(
+            "User list updated", 
+            "Server", 
+            "localhost", 
+            "Server", 
+            getConnectedUsers()
+        );
+        
+        // Gửi tin nhắn cho tất cả client không lưu vào database
+        for (ClientInfo clientInfo : clients.values()) {
+            sendToClient(userListMessage, clientInfo.getAddress(), clientInfo.getPort());
         }
     }
     

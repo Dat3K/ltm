@@ -2,6 +2,7 @@ package com.chatapp.model;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -15,6 +16,7 @@ public class Message implements Serializable {
     private String senderIp;
     private String senderUsername;
     private Timestamp timestamp;
+    private List<User> onlineUsers; // Danh sách người dùng đang online
 
     public Message() {
     }
@@ -25,6 +27,11 @@ public class Message implements Serializable {
         this.senderIp = senderIp;
         this.senderUsername = senderUsername;
         this.timestamp = new Timestamp(System.currentTimeMillis());
+    }
+
+    public Message(String content, String senderName, String senderIp, String senderUsername, List<User> onlineUsers) {
+        this(content, senderName, senderIp, senderUsername);
+        this.onlineUsers = onlineUsers;
     }
 
     public int getId() {
@@ -73,6 +80,14 @@ public class Message implements Serializable {
 
     public void setTimestamp(Timestamp timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public List<User> getOnlineUsers() {
+        return onlineUsers;
+    }
+
+    public void setOnlineUsers(List<User> onlineUsers) {
+        this.onlineUsers = onlineUsers;
     }
 
     @Override

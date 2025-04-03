@@ -5,6 +5,7 @@ import com.chatapp.util.DatabaseConnection;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -101,6 +102,8 @@ public class MessageDAO {
         } catch (SQLException e) {
             System.err.println("Error retrieving recent messages: " + e.getMessage());
         }
+        
+        Collections.reverse(messages);
         
         return messages;
     }

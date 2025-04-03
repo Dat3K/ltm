@@ -95,6 +95,26 @@ public class TCPChatServer implements ChatServer {
         }
     }
 
+    // Phương thức mới để gửi danh sách người dùng cập nhật cho tất cả client
+    @Override
+    public void broadcastUserList() {
+        if (!running) return;
+        
+        // Tạo tin nhắn từ server chứa danh sách người dùng
+        Message userListMessage = new Message(
+            "User list updated", 
+            "Server", 
+            "localhost", 
+            "Server", 
+            getConnectedUsers()
+        );
+        
+        // Gửi tin nhắn cho tất cả client không lưu vào database
+        for (ClientHandler client : clients) {
+            client.sendMessage(userListMessage);
+        }
+    }
+
     @Override
     public boolean isRunning() {
         return running;
@@ -139,13 +159,25 @@ public class TCPChatServer implements ChatServer {
                 // Add to connected users
                 connectedUsers.add(user);
                 onClientConnected.accept(user);
+                
+                // Gửi danh sách người dùng cập nhật cho tất cả client
+                broadcastUserList();
 
-                // Send recent messages to the client
-                List<Message> recentMessages = messageDAO.getRecentMessages(20);
+                // Send recent messages to the client (increased from 20 to 50)
+                List<Message> recentMessages = messageDAO.getRecentMessages(50);
                 for (Message message : recentMessages) {
                     outputStream.writeObject(message);
                 }
-                outputStream.writeObject(new Message("Welcome to the chat server!", "Server", "localhost", "Server"));
+                
+                // Gửi tin nhắn chào mừng kèm danh sách người dùng đang online
+                Message welcomeMessage = new Message(
+                    "Welcome to the chat server!", 
+                    "Server", 
+                    "localhost", 
+                    "Server",
+                    getConnectedUsers()
+                );
+                outputStream.writeObject(welcomeMessage);
                 outputStream.flush();
 
                 // Process client messages
@@ -182,6 +214,9 @@ public class TCPChatServer implements ChatServer {
                 if (user != null) {
                     connectedUsers.remove(user);
                     onClientDisconnected.accept(user);
+                    
+                    // Gửi danh sách người dùng cập nhật cho tất cả client sau khi ngắt kết nối
+                    broadcastUserList();
                 }
                 
                 clients.remove(this);

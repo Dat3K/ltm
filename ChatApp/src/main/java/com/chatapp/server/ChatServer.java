@@ -34,6 +34,11 @@ public interface ChatServer {
     void broadcastMessage(Message message);
     
     /**
+     * Broadcast user list to all connected clients
+     */
+    void broadcastUserList();
+    
+    /**
      * Check if the server is running
      * @return true if server is running, false otherwise
      */
