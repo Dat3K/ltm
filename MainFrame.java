@@ -6,7 +6,7 @@ import java.awt.event.ActionListener;
 // Add imports for lab classes in their new locations
 import lab1.Lab1;
 import lab2.Lab2;
-import lab34.Lab34;
+import lab3.Lab3;
 import lab5.Lab5;
 import lab6.Lab6;
 import lab7.Lab7;
@@ -64,7 +64,7 @@ public class MainFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Open Lab 3
-                new Lab34().setVisible(true);
+                new Lab3().setVisible(true);
             }
         });
 

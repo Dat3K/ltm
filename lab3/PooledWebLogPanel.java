@@ -1,57 +1,50 @@
-package lab34;
+package lab3;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import java.awt.*;
 import java.io.*;
-import java.net.*;
-import java.util.*;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
+import java.util.LinkedList;
+import java.util.Random;
+import java.util.concurrent.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * A simple web server log analyzer that reads log files,
- * resolves IP addresses to hostnames, and displays results.
- * This is an all-in-one implementation with minimal external dependencies.
+ * Implementation of PooledWebLog with JavaSwing UI
+ * This class processes web server logs in parallel using a thread pool
  */
-public class WebLogAnalyzer extends JPanel {
+public class PooledWebLogPanel extends JPanel {
+    private static final int DEFAULT_NUM_THREADS = 4;
+    
     // UI Components
     private JTextField filePathField;
     private JButton browseButton, processButton, generateSampleButton;
+    private JSpinner threadSpinner;
     private JTable logTable;
     private JLabel statusLabel;
     private JProgressBar progressBar;
     private LogTableModel tableModel;
     
-    // Cache for hostname lookups
-    private Map<String, String> hostnameCache = new ConcurrentHashMap<>();
-    
     // Data model for log entries
     private static class LogEntry {
-        String ipAddress;
-        String hostname;
-        String timestamp;
-        String request;
-        int statusCode;
-        long bytesSent;
+        String original;
+        String resolvedEntry;
         
-        public LogEntry(String ipAddress, String timestamp, String request, 
-                        int statusCode, long bytesSent) {
-            this.ipAddress = ipAddress;
-            this.timestamp = timestamp;
-            this.request = request;
-            this.statusCode = statusCode;
-            this.bytesSent = bytesSent;
+        LogEntry(String original, String resolvedEntry) {
+            this.original = original;
+            this.resolvedEntry = resolvedEntry;
         }
     }
     
     // Table model for displaying log entries
     private static class LogTableModel extends AbstractTableModel {
-        private final String[] columnNames = {
-            "IP Address", "Hostname", "Timestamp", "Request", "Status", "Bytes"
-        };
+        private final String[] columnNames = {"Original Entry", "Resolved Entry"};
         private List<LogEntry> entries = new ArrayList<>();
         
         public void setEntries(List<LogEntry> entries) {
@@ -77,25 +70,51 @@ public class WebLogAnalyzer extends JPanel {
         public Object getValueAt(int rowIndex, int columnIndex) {
             LogEntry entry = entries.get(rowIndex);
             switch (columnIndex) {
-                case 0: return entry.ipAddress;
-                case 1: return entry.hostname != null ? entry.hostname : "unresolved";
-                case 2: return entry.timestamp;
-                case 3: return entry.request;
-                case 4: return entry.statusCode;
-                case 5: return entry.bytesSent;
+                case 0: return entry.original;
+                case 1: return entry.resolvedEntry;
                 default: return null;
             }
         }
     }
     
-    public WebLogAnalyzer() {
+    // Callable task for resolving hostnames in log entries
+    private static class LookupTask implements Callable<String> {
+        private final String entry;
+        private static final Pattern IP_PATTERN = Pattern.compile("^(\\S+)");
+        
+        public LookupTask(String entry) {
+            this.entry = entry;
+        }
+        
+        @Override
+        public String call() throws Exception {
+            Matcher matcher = IP_PATTERN.matcher(entry);
+            if (matcher.find()) {
+                String ip = matcher.group(1);
+                try {
+                    InetAddress addr = InetAddress.getByName(ip);
+                    String hostname = addr.getHostName();
+                    
+                    // Replace the IP with hostname in the log entry if resolved successfully
+                    if (!hostname.equals(ip)) {
+                        return entry.replace(ip, hostname);
+                    }
+                } catch (UnknownHostException e) {
+                    // In case of failure, just return the original entry
+                }
+            }
+            return entry;
+        }
+    }
+    
+    public PooledWebLogPanel() {
         setLayout(new BorderLayout(10, 10));
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         
         // Create description panel
         JPanel descPanel = new JPanel(new BorderLayout());
-        JLabel descLabel = new JLabel("<html><b>Web Server Log Analyzer:</b> Load web server logs, " +
-                "resolve IP addresses to hostnames, and view log entries.</html>");
+        JLabel descLabel = new JLabel("<html><b>Pooled Web Log Processor:</b> Process web server logs " +
+                "in parallel using a thread pool for improved performance.</html>");
         descLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
         descPanel.add(descLabel, BorderLayout.CENTER);
         add(descPanel, BorderLayout.NORTH);
@@ -111,14 +130,25 @@ public class WebLogAnalyzer extends JPanel {
         processButton.setEnabled(false);
         generateSampleButton = new JButton("Generate Sample");
         
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        buttonPanel.add(generateSampleButton);
-        buttonPanel.add(browseButton);
-        buttonPanel.add(processButton);
+        // Add thread count spinner
+        JPanel threadPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JLabel threadLabel = new JLabel("Thread Pool Size:");
+        SpinnerNumberModel spinnerModel = new SpinnerNumberModel(DEFAULT_NUM_THREADS, 1, 32, 1);
+        threadSpinner = new JSpinner(spinnerModel);
+        threadPanel.add(threadLabel);
+        threadPanel.add(threadSpinner);
+        
+        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        buttonsPanel.add(generateSampleButton);
+        buttonsPanel.add(browseButton);
+        buttonsPanel.add(processButton);
+        
+        JPanel topControlsPanel = new JPanel(new BorderLayout());
+        topControlsPanel.add(filePathField, BorderLayout.CENTER);
+        topControlsPanel.add(buttonsPanel, BorderLayout.EAST);
         
         filePanel.add(new JLabel("File:"), BorderLayout.WEST);
-        filePanel.add(filePathField, BorderLayout.CENTER);
-        filePanel.add(buttonPanel, BorderLayout.EAST);
+        filePanel.add(topControlsPanel, BorderLayout.CENTER);
         
         // Create table for displaying results
         tableModel = new LogTableModel();
@@ -127,12 +157,8 @@ public class WebLogAnalyzer extends JPanel {
         logTable.setFillsViewportHeight(true);
         
         // Adjust column widths
-        logTable.getColumnModel().getColumn(0).setPreferredWidth(100); // IP
-        logTable.getColumnModel().getColumn(1).setPreferredWidth(150); // Hostname
-        logTable.getColumnModel().getColumn(2).setPreferredWidth(150); // Timestamp
-        logTable.getColumnModel().getColumn(3).setPreferredWidth(300); // Request
-        logTable.getColumnModel().getColumn(4).setPreferredWidth(60);  // Status
-        logTable.getColumnModel().getColumn(5).setPreferredWidth(80);  // Bytes
+        logTable.getColumnModel().getColumn(0).setPreferredWidth(400); // Original Entry
+        logTable.getColumnModel().getColumn(1).setPreferredWidth(400); // Resolved Entry
         
         JScrollPane scrollPane = new JScrollPane(logTable);
         
@@ -147,6 +173,7 @@ public class WebLogAnalyzer extends JPanel {
         // Add main components to the panel
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.add(filePanel, BorderLayout.CENTER);
+        topPanel.add(threadPanel, BorderLayout.SOUTH);
         
         add(topPanel, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
@@ -181,33 +208,105 @@ public class WebLogAnalyzer extends JPanel {
         processButton.setEnabled(false);
         tableModel.clearEntries();
         
+        // Get thread count from spinner
+        int numThreads = (Integer) threadSpinner.getValue();
+        
         // Use SwingWorker to process file in background
         new SwingWorker<List<LogEntry>, Integer>() {
             @Override
             protected List<LogEntry> doInBackground() throws Exception {
+                List<LogEntry> resultEntries = new ArrayList<>();
                 File file = new File(filePath);
-                long fileSize = file.length();
                 long bytesRead = 0;
-                List<LogEntry> entries = new ArrayList<>();
                 
-                try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        bytesRead += line.length() + 1; // +1 for newline
-                        LogEntry entry = parseLine(line);
-                        if (entry != null) {
-                            // Resolve hostname
-                            entry.hostname = resolveHostname(entry.ipAddress);
-                            entries.add(entry);
+                // Create thread pool with the specified number of threads
+                ExecutorService executor = Executors.newFixedThreadPool(numThreads);
+                
+                try {
+                    // First count total lines for progress calculation
+                    int totalLines = 0;
+                    try (BufferedReader lineCounter = new BufferedReader(new FileReader(file))) {
+                        while (lineCounter.readLine() != null) {
+                            totalLines++;
+                        }
+                    }
+                    
+                    // Read and process the file
+                    try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                        // Queue to store the results in order
+                        Queue<Future<String>> futures = new LinkedList<>();
+                        Queue<String> originalEntries = new LinkedList<>();
+                        
+                        String line;
+                        int linesProcessed = 0;
+                        
+                        // Submit tasks to the executor
+                        while ((line = reader.readLine()) != null) {
+                            bytesRead += line.length() + 1; // +1 for newline
+                            
+                            // Create and submit a lookup task
+                            LookupTask task = new LookupTask(line);
+                            Future<String> future = executor.submit(task);
+                            
+                            // Store the original line and its future result
+                            originalEntries.add(line);
+                            futures.add(future);
+                            
+                            // Process results as they become available to avoid memory buildup
+                            processAvailableResults(resultEntries, futures, originalEntries);
+                            
+                            // Update progress periodically
+                            linesProcessed++;
+                            if (linesProcessed % 10 == 0) {
+                                int progress = (int)((linesProcessed * 100.0) / totalLines);
+                                publish(progress);
+                            }
                         }
                         
-                        // Update progress
-                        int progress = (int)((bytesRead * 100) / fileSize);
-                        publish(progress);
+                        // Process any remaining results
+                        while (!futures.isEmpty()) {
+                            Future<String> future = futures.poll();
+                            String original = originalEntries.poll();
+                            
+                            try {
+                                String resolved = future.get();
+                                resultEntries.add(new LogEntry(original, resolved));
+                            } catch (Exception e) {
+                                // If there's an error, use the original entry
+                                resultEntries.add(new LogEntry(original, original));
+                            }
+                        }
                     }
+                } finally {
+                    // Shutdown the executor
+                    executor.shutdown();
+                    executor.awaitTermination(5, TimeUnit.SECONDS);
                 }
                 
-                return entries;
+                return resultEntries;
+            }
+            
+            private void processAvailableResults(List<LogEntry> resultEntries, 
+                                                Queue<Future<String>> futures,
+                                                Queue<String> originalEntries) {
+                // Process results that are already available
+                while (!futures.isEmpty()) {
+                    Future<String> future = futures.peek();
+                    if (future.isDone()) {
+                        futures.poll();
+                        String original = originalEntries.poll();
+                        
+                        try {
+                            String resolved = future.get();
+                            resultEntries.add(new LogEntry(original, resolved));
+                        } catch (Exception e) {
+                            // If there's an error, use the original entry
+                            resultEntries.add(new LogEntry(original, original));
+                        }
+                    } else {
+                        break;
+                    }
+                }
             }
             
             @Override
@@ -225,11 +324,11 @@ public class WebLogAnalyzer extends JPanel {
                 try {
                     List<LogEntry> entries = get();
                     tableModel.setEntries(entries);
-                    statusLabel.setText("Processed " + entries.size() + " log entries.");
+                    statusLabel.setText("Processed " + entries.size() + " log entries using " + threadSpinner.getValue() + " threads.");
                     progressBar.setValue(100);
                 } catch (Exception e) {
                     statusLabel.setText("Error: " + e.getMessage());
-                    JOptionPane.showMessageDialog(WebLogAnalyzer.this,
+                    JOptionPane.showMessageDialog(PooledWebLogPanel.this,
                         "Error processing log file: " + e.getMessage(),
                         "Error", JOptionPane.ERROR_MESSAGE);
                 } finally {
@@ -237,57 +336,6 @@ public class WebLogAnalyzer extends JPanel {
                 }
             }
         }.execute();
-    }
-    
-    private LogEntry parseLine(String line) {
-        // Common Log Format pattern:
-        // 127.0.0.1 - frank [10/Oct/2000:13:55:36 -0700] "GET /apache_pb.gif HTTP/1.0" 200 2326
-        Pattern pattern = Pattern.compile(
-            "^(\\S+) \\S+ \\S+ \\[([^\\]]+)\\] \"([^\"]+)\" (\\d+) (\\d+|-)$"
-        );
-        
-        Matcher matcher = pattern.matcher(line);
-        if (matcher.matches()) {
-            String ip = matcher.group(1);
-            String timestamp = matcher.group(2);
-            String request = matcher.group(3);
-            int status = Integer.parseInt(matcher.group(4));
-            
-            // Handle "-" in bytes field
-            long bytes = 0;
-            String bytesStr = matcher.group(5);
-            if (!"-".equals(bytesStr)) {
-                bytes = Long.parseLong(bytesStr);
-            }
-            
-            return new LogEntry(ip, timestamp, request, status, bytes);
-        }
-        
-        return null;
-    }
-    
-    private String resolveHostname(String ipAddress) {
-        // Check cache first
-        if (hostnameCache.containsKey(ipAddress)) {
-            return hostnameCache.get(ipAddress);
-        }
-        
-        try {
-            InetAddress addr = InetAddress.getByName(ipAddress);
-            String hostname = addr.getHostName();
-            
-            // If the hostname is the same as the IP, DNS couldn't resolve it
-            if (!hostname.equals(ipAddress)) {
-                hostnameCache.put(ipAddress, hostname);
-                return hostname;
-            } else {
-                hostnameCache.put(ipAddress, "unresolved");
-                return "unresolved";
-            }
-        } catch (UnknownHostException e) {
-            hostnameCache.put(ipAddress, "unresolved");
-            return "unresolved";
-        }
     }
     
     private void generateSampleLog() {
@@ -459,11 +507,11 @@ public class WebLogAnalyzer extends JPanel {
         }
     }
     
-    // Static method to create and show the simple log analyzer
+    // Static method to create and show the panel in its own frame
     public static void createAndShow() {
-        JFrame frame = new JFrame("Web Server Log Analyzer");
+        JFrame frame = new JFrame("Pooled Web Log Processor");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.add(new WebLogAnalyzer());
+        frame.add(new PooledWebLogPanel());
         frame.setSize(800, 600);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
@@ -471,6 +519,6 @@ public class WebLogAnalyzer extends JPanel {
     
     // Test method
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(WebLogAnalyzer::createAndShow);
+        SwingUtilities.invokeLater(PooledWebLogPanel::createAndShow);
     }
-}
+} 
