@@ -53,14 +53,9 @@ rmdir /S /Q temp
 echo JAR build completed successfully!
 echo The JAR file is located at ChatApp.jar
 
-echo Creating run script...
-echo @echo off> run.bat
-echo java -jar ChatApp.jar>> run.bat
-
 :: Create dist directory
 if not exist "dist" mkdir dist
 copy ChatApp.jar dist\
-copy run.bat dist\
 
 echo.
 echo To run the application, use run.bat or execute "java -jar ChatApp.jar"
