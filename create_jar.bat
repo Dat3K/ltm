@@ -14,4 +14,3 @@ echo.
 echo JAR file created: ExerciseLauncher.jar
 echo.
 echo You can run the application with: java -jar ExerciseLauncher.jar
-pause
