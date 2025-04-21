@@ -39,7 +39,7 @@ public class Lab6 extends JFrame {
         // Create a welcome panel (shown by default)
         welcomePanel = new JPanel(new BorderLayout());
         JLabel welcomeLabel = new JLabel("52100781 - Nguyễn Thành Đạt");
-        welcomeLabel.setFont(new Font("Arial", Font.BOLD, 50));
+        welcomeLabel.setFont(new Font("Arial", Font.BOLD, 20));
         welcomeLabel.setHorizontalAlignment(SwingConstants.CENTER);
         welcomePanel.add(welcomeLabel, BorderLayout.CENTER);
 
