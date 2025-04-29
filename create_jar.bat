@@ -5,7 +5,7 @@ rem Create build directory
 if not exist build mkdir build
 
 rem Compile all Java files
-javac -d build *.java lab1\*.java lab2\*.java lab3\*.java lab4\*.java lab5\*.java lab6\*.java lab7\*.java lab8\*.java lab9\*.java lab10\*.java
+javac -encoding UTF-8 -d build *.java lab1\*.java lab2\*.java lab3\*.java lab4\*.java lab5\*.java lab6\*.java lab7\*.java lab8\*.java lab9\*.java lab10\*.java
 
 rem Create JAR with manifest
 jar cfm ExerciseLauncher.jar MANIFEST.MF -C build .
