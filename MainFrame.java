@@ -10,7 +10,6 @@ import lab5.Lab5;
 import lab6.Lab6;
 import lab7.Lab7;
 import lab8.Lab8;
-import lab9.Lab9;
 import lab10.Lab10;
 
 public class MainFrame extends JFrame {
@@ -37,7 +36,6 @@ public class MainFrame extends JFrame {
         JButton lab6Button = new JButton("Lab 6");
         JButton lab7Button = new JButton("Lab 7");
         JButton lab8Button = new JButton("Lab 8");
-        JButton lab9Button = new JButton("Lab 9");
         JButton lab10Button = new JButton("Lab 10");
 
         // Add action listeners to buttons
@@ -89,14 +87,6 @@ public class MainFrame extends JFrame {
             }
         });
 
-        lab9Button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Open Lab 9
-                new Lab9().setVisible(true);
-            }
-        });
-
         lab10Button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -111,7 +101,6 @@ public class MainFrame extends JFrame {
         buttonPanel.add(lab6Button);
         buttonPanel.add(lab7Button);
         buttonPanel.add(lab8Button);
-        buttonPanel.add(lab9Button);
         buttonPanel.add(lab10Button);
 
         add(buttonPanel, BorderLayout.CENTER);

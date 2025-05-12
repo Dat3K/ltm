@@ -2,16 +2,61 @@
 
 A collection of Java applications for network programming exercises. This project includes various tools for network-related operations like DNS lookups, log analysis, and more.
 
-## Features
+## Project Overview
 
-- **Main Launcher**: Central application to access all lab exercises
-- **Lab 1**: Basic network programming exercises
-- **Lab 2**: Socket programming exercises
+This project is organized as a collection of lab exercises for network programming in Java. Each lab focuses on different aspects of network programming and provides practical implementations of various network-related tools and utilities.
+
+### Project Structure
+
+```
+Lab/
+├── lab3/          
+├── lab4/
+├── lab5/
+├── lab6/
+├── lab7/
+├── lab8/
+├── lab9/
+├── lab10/
+├── build/          # Compiled class files
+├── MainFrame.java  # Main launcher application
+├── create_jar.bat  # Windows script to compile and create JAR
+├── create_jar.sh   # Linux/Mac script to compile and create JAR
+├── MANIFEST.MF     # JAR manifest file
+└── build.xml       # Ant build file
+```
+
+## How It Works
+
+### Main Launcher (MainFrame.java)
+
+The `MainFrame.java` serves as the central entry point for all lab exercises. It:
+
+1. Creates a graphical user interface with buttons for each lab
+2. Handles launching individual lab applications when their respective buttons are clicked
+3. Provides a consistent interface for accessing all lab exercises
+
+### JAR Creation (create_jar.bat/create_jar.sh)
+
+The project includes scripts to compile all Java files and package them into a runnable JAR:
+
+1. `create_jar.bat` (Windows) or `create_jar.sh` (Linux/Mac) compiles all Java files in the project
+2. The compiled classes are placed in the `build` directory
+3. A JAR file is created using the `MANIFEST.MF` file, which specifies `MainFrame` as the main class
+4. The resulting `ExerciseLauncher.jar` can be run directly to access all lab exercises
+
+## Lab Exercises
+
 - **Lab 3**: Network utility tools
-  - Hostname to IP Lookup: Convert domain names to IP addresses
-  - DNS Records Lookup: Query various DNS record types for domains
-  - Web Server Log Analyzer: Analyze and extract insights from web server log files
-- **Lab 4-10**: Additional network programming exercises
+  - **Hostname to IP Lookup**: Convert domain names to IP addresses
+  - **DNS Records Lookup**: Query various DNS record types for domains (A, AAAA, MX, NS, etc.)
+  - **Web Server Log Analyzer**: Analyze and extract insights from web server log files
+
+- **Lab 4**: Basic network programming exercises
+  - Placeholder for additional network programming exercises
+
+- **Lab 5-10**: Additional network programming exercises
+  - Each lab contains specific network programming implementations
 
 ## Getting Started
 
@@ -34,7 +79,11 @@ You can run the application in several ways:
    - On Linux/Mac: `./create_jar.sh`
    - Using Ant: `ant jar`
 
-## Web Server Log Analyzer
+3. **Running from source**:
+   - Compile: `javac MainFrame.java`
+   - Run: `java MainFrame`
+
+## Web Server Log Analyzer (Lab 3)
 
 The Web Server Log Analyzer in Lab 3 allows you to:
 
@@ -46,7 +95,18 @@ The Web Server Log Analyzer in Lab 3 allows you to:
 
 ### Sample Log Files
 
-The project includes a utility to generate sample log files for testing purposes. Run the SampleLogGenerator class to create these files.
+The project includes a utility to generate sample log files for testing purposes. In the Web Server Log Analyzer, click the "Generate Sample" button to create sample log files for testing.
+
+## Adding New Labs
+
+To add a new lab to the project:
+
+1. Create a new package for your lab (e.g., `lab11`)
+2. Create a main class for your lab that extends `JFrame` (e.g., `Lab11.java`)
+3. Add the import for your new lab class in `MainFrame.java`
+4. Add a button for your lab in the `buttonPanel` in `MainFrame.java`
+5. Add an action listener for the new button that creates and displays your lab class
+6. Update the `create_jar.bat` and `create_jar.sh` scripts to include your new lab package
 
 ## License
 
