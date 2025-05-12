@@ -4,8 +4,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 // Add imports for lab classes in their new locations
-import lab1.Lab1;
-import lab2.Lab2;
 import lab3.Lab3;
 import lab4.Lab4;
 import lab5.Lab5;
@@ -33,8 +31,6 @@ public class MainFrame extends JFrame {
         buttonPanel.setLayout(new GridLayout(5, 2, 10, 10));
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        JButton lab1Button = new JButton("Lab 1");
-        JButton lab2Button = new JButton("Lab 2");
         JButton lab3Button = new JButton("Lab 3");
         JButton lab4Button = new JButton("Lab 4");
         JButton lab5Button = new JButton("Lab 5");
@@ -45,22 +41,6 @@ public class MainFrame extends JFrame {
         JButton lab10Button = new JButton("Lab 10");
 
         // Add action listeners to buttons
-        lab1Button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Open Lab 1
-                new Lab1().setVisible(true);
-            }
-        });
-
-        lab2Button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Open Lab 2
-                new Lab2().setVisible(true);
-            }
-        });
-
         lab3Button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -125,8 +105,6 @@ public class MainFrame extends JFrame {
             }
         });
 
-        buttonPanel.add(lab1Button);
-        buttonPanel.add(lab2Button);
         buttonPanel.add(lab3Button);
         buttonPanel.add(lab4Button);
         buttonPanel.add(lab5Button);
